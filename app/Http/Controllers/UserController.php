@@ -16,12 +16,52 @@ class UserController extends Controller
     // Créer un nouvel utilisateur
     public function store(Request $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password), // toujours hasher le mot de passe
+         // $breukh = $request->validate([
+        //     'name' => 'required|string|max:255|min:3',
+        //     'email' => "required|email|unique:users,email",
+        //     'password' => 'required|string|min:6',
+        // ]);
+
+        // $breukh = $request->validated();
+
+        $user = User::create($request->validated());
+
+        return response()->json([
+            'message' => 'User created successfully',
+            'data' => UserResource::make($user)
         ]);
 
-        return response()->json($user, 201);
+    }
+
+    // Modifier un utilisateur
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->update([
+            'name' => $request->name ?? $user->name,
+            'email' => $request->email ?? $user->email,
+            'password' => $request->password ? bcrypt($request->password) : $user->password,
+        ]);
+
+        return response()->json($user);
+    }
+
+    // Supprimer un utilisateur
+    public function destroy($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully']);
     }
 }
