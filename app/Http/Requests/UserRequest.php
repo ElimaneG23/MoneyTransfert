@@ -1,31 +1,42 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
+use App\Models\User;
+use Illuminate\Http\Request;
 
-class UserRequest extends FormRequest
+class UserController extends Controller
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    //
+
+    public function index()
     {
-        return false;
+        $users = User::all();
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => UserResource::collection($users)
+        ]);
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
+
+    public function createUser(UserRequest $request)
     {
-        return [
-            'name' => 'required|string|max:255|min:3',
-            'email' => "required|email|unique:users,email",
-            'password' => 'required|string|min:6',
-        ];
+
+        // $breukh = $request->validate([
+        //     'name' => 'required|string|max:255|min:3',
+        //     'email' => "required|email|unique:users,email",
+        //     'password' => 'required|string|min:6',
+        // ]);
+
+        // $breukh = $request->validated();
+
+        $user = User::create($request->validated());
+
+        return response()->json([
+            'message' => 'User created successfully',
+            'data' => UserResource::make($user)
+        ]);
     }
 }

@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AuthController;
+
 
 // User Routes
 
@@ -11,7 +13,7 @@ use App\Http\Controllers\AccountController;
 Route::get('/users', [UserController::class, 'index']);
 
 // Route pour créer un nouvel user (Create)
-Route::post('/user', [UserController::class, 'store']);
+Route::post('/user', [UserController::class, 'createUser']);
 
 // UPDATE
 Route::put('/user/{id}', [UserController::class, 'update']);
@@ -24,22 +26,30 @@ Route::delete('/user/{id}', [UserController::class, 'destroy']);
 // Lister
 Route::get('/accounts', [AccountController::class, 'index']);
 
-// Créer
-Route::post('/account', [AccountController::class, 'store']);
-
-// Voir un seul
-Route::get('/account/{id}', [AccountController::class, 'show']);
-
-// Modifier
-Route::put('/account/{id}', [AccountController::class, 'update']);
-
-// Supprimer
-Route::delete('/account/{id}', [AccountController::class, 'destroy']);
-
+// AUTH ROUTES
 Route::post('/register', [AuthController::class, 'register']);
-
-
 Route::post('/login', [AuthController::class, 'login']);
+
+// // Voir un seul
+// Route::get('/account/{id}', [AuthController::class, 'show']);
+
+// // Modifier
+// Route::put('/account/{id}', [AccountController::class, 'update']);
+
+// // Supprimer
+// Route::delete('/account/{id}', [AccountController::class, 'destroy']);
+
+// Route::post('/register', [AuthController::class, 'register']);
+
+
+// Route::post('/login', [AuthController::class, 'login']);
+
+// TRANSACTIONS ROUTES
+
+Route::post('/transactions', [TransactionController::class, 'store']);
+
+
+Route::post('/', [TransactionController::class, 'index']);
 
 
 Route::middleware('auth:sanctum')->group(function () {

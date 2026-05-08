@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -33,9 +34,39 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TransactionRequest $request)
     {
         //
+        $validatedData = $request->validated();
+
+        $senderAccount = Account::where('id', $validatedData['sender_account_id'])->first();
+        $receiverAccount = Account::where('id', $validatedData['receiver_account_id'])->first();
+        $fee = 0; // 1% fee
+        $totalAmount = $validatedData['amount'];
+        
+        if ($validatedData['type'] === TransactionType::TRANSFER) {
+            $fee = $validatedData['amount'] * 0.01;
+            $totalAmount = $validatedData['amount'] + $fee;
+        }
+
+        if ($senderAccount->balance < $totalAmount) {
+            return response()->json([
+                'message' => 'Insufficient funds in sender account'
+            ], 400);
+        }
+
+        $transaction = Transaction::create([
+            'type' => $validatedData['type'],
+            'amount' => $validatedData['amount'],
+            'sender_account_id' => $validatedData['sender_account_id'],
+            'receiver_account_id' => $validatedData['receiver_account_id'],
+            'status' => Status::PENDING,
+            'code' => rand(1000, 9999),
+        ]);
+        return response()->json([
+            'message' => 'Transaction created successfully',
+            'data' => $transaction
+        ], 201);
     }
 
     /**

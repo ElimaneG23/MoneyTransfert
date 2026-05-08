@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     //
-  public function login(Request $request)
+
+
+    public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
@@ -29,23 +34,6 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
-
-
-
-        // if (auth()->attempt($credentials)) {
-        //     $user = auth()->user();
-        //     $token = $user->createToken('auth_token')->plainTextToken;
-
-        //     return response()->json([
-        //         'message' => 'Login successful',
-        //         'access_token' => $token,
-        //         'token_type' => 'Bearer',
-        //     ]);
-        // }
-
-        // return response()->json(['message' => 'Invalid credentials'], 401);
-
-
     }
 
     public function register(Request $request)
@@ -65,6 +53,7 @@ class AuthController extends Controller
         //      'numero_compte' => 'ACC' . str_pad($user->id, 6, '0', STR_PAD_LEFT),
         //      'solde' => 0,
         //      'code' => $request->input('code'),
+
         //  ]);
 
         $account = Account::create([
